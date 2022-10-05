@@ -3,3 +3,5 @@
 
 # IDEs and editors
 /.idea
+
+*/.env

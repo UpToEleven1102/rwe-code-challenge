@@ -1,7 +1,12 @@
-var amqp = require('amqplib/callback_api');
+require('dotenv').config();
+
+const amqp = require('amqplib/callback_api');
+
+const queue = process.env.QUEUE_NAME;
+const amqpUrl = process.env.AMQP_URL || 'amqp://localhost';
 
 function main() {
-    amqp.connect('amqp://localhost', function(error0, connection) {
+    amqp.connect(amqpUrl, function(error0, connection) {
         if (error0) {
             throw error0;
         }
@@ -9,15 +14,16 @@ function main() {
             if (error1) {
                 throw error1;
             }
-            var queue = 'hello';
-            var msg = 'Hello world';
 
             channel.assertQueue(queue, {
                 durable: false
             });
 
-            channel.sendToQueue(queue, Buffer.from(msg));
-            console.log(" [x] Sent %s", msg);
+            setInterval(() => {
+                const msg = "Sending message at " + Date.now();
+                channel.sendToQueue(queue, Buffer.from(msg));
+                console.log(" [x] Sent %s", msg);
+            }, 1000);
         });
     });
 }

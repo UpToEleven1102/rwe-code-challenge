@@ -1,5 +1,7 @@
-var amqp = require('amqplib/callback_api');
+require('dotenv').config();
+const amqp = require('amqplib/callback_api');
 
+const queue = process.env.QUEUE_NAME;
 
 function main() {
     amqp.connect('amqp://localhost', function(error0, connection) {
@@ -10,8 +12,6 @@ function main() {
             if (error1) {
                 throw error1;
             }
-
-            var queue = 'hello';
 
             channel.assertQueue(queue, {
                 durable: false

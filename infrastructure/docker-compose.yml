@@ -1,15 +1,37 @@
 version: "3.0"
 
 services:
+  windpark-app:
+    build: ../publisher-app
+    image: wind-park-app:1.0
+    environment:
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672
+      QUEUE_NAME: wind_park
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+    restart: on-failure
+    networks:
+      - rabbitmq_nodejs
+
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_HOST: '127.0.0.1'
     ports:
       - 5672:5672
       - 15672:15672
     volumes:
       - rabbitmqdata:/var/lib/rabbitmq
     hostname: rabbitmq
+    networks:
+      - rabbitmq_nodejs
+
+networks:
+  rabbitmq_nodejs:
+    driver: bridge
 
 volumes:
   rabbitmqdata:
