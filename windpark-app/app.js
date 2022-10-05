@@ -33,6 +33,8 @@ function main() {
                 data.sent_at = Date.now();
                 const msg = JSON.stringify(data);
                 channel.sendToQueue(queue, Buffer.from(msg));
+
+                console.log(" [x] Sent %s", msg);
             }, 5000);
         });
     });

@@ -5,6 +5,7 @@ const aggregationTimeInterval = process.env.AGGREGATION_TIME_INTERVAL || 5 * 600
 
 module.exports = class WindParkApiService {
     _aggregateData = [{recorded_timestamp: Date.now(), data: []}];
+    _aggregatedValue;
     _axiosClient;
 
     constructor() {
@@ -18,21 +19,7 @@ module.exports = class WindParkApiService {
         this._aggregateData[this._aggregateData.length - 1].data.push(data);
     }
 
-
-    // Service public methods:
-    /**
-     * This function initializes the process of retrieving data from API every second
-     */
-    init() {
-        setInterval(() => this._retrieveData(), retrieveDataInterval);
-        // push new record every 5 minutes
-        setInterval(() => this._aggregateData.push({
-            recorded_timestamp: Date.now(),
-            data: []
-        }), aggregationTimeInterval);
-    }
-
-    getAggregateValues() {
+    calculateAggregatedValue() {
         // aggregate the latest record into a summary report
         const {
             recorded_timestamp,
@@ -77,6 +64,27 @@ module.exports = class WindParkApiService {
             recorded_since: recorded_timestamp,
             sites: sitesResponse
         }
+    }
+
+
+    // Service public methods:
+    /**
+     * This function initializes the process of retrieving data from API every second
+     */
+    init() {
+        setInterval(() => this._retrieveData(), retrieveDataInterval);
+        // push new record every 5 minutes
+        setInterval(() => {
+            this._aggregatedValue = this.calculateAggregatedValue();
+            this._aggregateData.push({
+                recorded_timestamp: Date.now(),
+                data: []
+            })
+        }, aggregationTimeInterval);
+    }
+
+    getAggregateValues() {
+        return this._aggregatedValue ?? this.calculateAggregatedValue();
     }
 
     async getAllSites() {
