@@ -21,6 +21,9 @@ services:
     environment:
       AMQP_URL: amqp://guest:guest@rabbitmq:5672
       QUEUE_NAME: wind_park
+      WIND_PARK_API_URL: http://renewables-codechallenge.azurewebsites.net/api
+      RETRIEVE_DATA_INTERVAL: 1000
+      AGGREGATION_TIME_INTERVAL: 5 * 60 * 1000
     links:
       - rabbitmq
     depends_on:
